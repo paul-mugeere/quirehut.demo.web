@@ -1,0 +1,27 @@
+image: $CAKEBUILD_REGISTRY_PREFIX/quirehut.demo.cakebuild:dotnet8_ubuntu24.04
+
+services:
+  - name: docker:dind  # Enables networking; doesn't start a new daemon
+    command: ["--registry-mirror=https://registry-1.docker.io"] # caches images which improves performance
+
+variables:
+  DOCKER_HOST: tcp://docker:2375 # instruct the CI/CD jobs to communicate with the DinD service over TCP
+  DOCKER_TLS_CERTDIR: "" # disable TLS verification for DinD(keep it simple), otherwise we need to specifiy the directory where TLS certificates are stored
+
+stages:
+  - build
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - tools/
+
+before_script:
+  - dotnet nuget add source "https://gitlab.com/api/v4/projects/64197928/packages/nuget/index.json" --name GitLab --username "gitlab-ci-token" --password "$CI_JOB_TOKEN" --store-password-in-clear-text
+
+
+build:
+  stage: build
+  script:
+    - chmod +x ./build.sh
+    - ./build.sh

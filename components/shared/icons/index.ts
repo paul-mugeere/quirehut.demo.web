@@ -1,0 +1,1 @@
+export { default as PersonOutlineIcon } from './PersonOutlineIcon';
