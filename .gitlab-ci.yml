@@ -19,9 +19,8 @@ cache:
 before_script:
   - dotnet nuget add source "https://gitlab.com/api/v4/projects/64197928/packages/nuget/index.json" --name GitLab --username "gitlab-ci-token" --password "$CI_JOB_TOKEN" --store-password-in-clear-text
 
-
 build:
   stage: build
   script:
     - chmod +x ./build.sh
-    - ./build.sh
+    - ./build.sh 

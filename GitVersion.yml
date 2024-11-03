@@ -1,0 +1,8 @@
+mode: ContinuousDeployment
+branches:
+  pull-request:
+    tag: pr-{BranchName}
+  feature:
+    tag: feature-{BranchName}
+  hotfix:
+    tag: hotfix-{BranchName}
