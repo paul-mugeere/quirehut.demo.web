@@ -1,6 +1,6 @@
 import { signOut } from "next-auth/react";
 import { FC, useState } from "react";
-import { FormButton } from "@/components/buttons";
+import { PrimaryButton } from "@/components/buttons";
 
 
 interface SignoutButtonProps {
@@ -22,7 +22,7 @@ const SignoutButton: FC<SignoutButtonProps> = ({ callbackUrl }) => {
         }
     }
 
-    return <FormButton handleOnClick={handleSignout} label="Sign out" state={isLoading}/>
+    return <PrimaryButton handleOnClick={handleSignout} label="Sign out" state={isLoading}/>
 }
 
 export default SignoutButton;

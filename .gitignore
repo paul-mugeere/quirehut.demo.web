@@ -44,3 +44,6 @@ tools/*
 # CMake
 cmake-build-*/
 nuget.config
+
+#rider ide files
+/.idea

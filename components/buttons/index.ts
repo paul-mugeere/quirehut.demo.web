@@ -1,1 +1,2 @@
-export {default as FormButton } from "./form-button"
+export {default as PrimaryButton } from "./PrimaryButton"
+export {default as SecondaryButton } from "./SecondaryButton"

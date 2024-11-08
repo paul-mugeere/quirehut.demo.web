@@ -1,1 +1,1 @@
-export {default as AuthLink} from "./auth-link"
+export {default as AuthLink} from "./AuthLink"

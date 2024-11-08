@@ -1,23 +1,18 @@
-import { FC } from 'react';
+'use client'
 
-import BookCover from './book-cover'
+import {useRouter} from "next/navigation";
+import {FC} from 'react';
+import {BookItemProps} from "./Book.types";
+import BookImage from "./BookImage";
 
-interface BookCardProps {
-    id: string;
-    title: string;
-    author: string;
-    format: "Paperback" | "Hardcover" | "E-book" | "Audiobook";
-    language: string;
-    price: number;
-    imgUrl: string;
-    handleOnClick: (id: string) => void
-}
-
-const BookCard : FC<BookCardProps>=({ id, title, author, format, language, price, imgUrl, handleOnClick }) => {
+const BookItem: FC<BookItemProps> = ({id, title, author, format, language, price, imgUrl}) => {
+    const router = useRouter();
+    const handleBookItemClick = (id: string) => {
+        router.push(`/books/${id}`)
+    }
 
     return (
-        <div
-        className='
+        <div className='
         book-item 
         bg-qh-slate-50 
         w-full h-full 
@@ -29,14 +24,13 @@ const BookCard : FC<BookCardProps>=({ id, title, author, format, language, price
         hover:shadow-lg 
         hover:cursor-pointer
         duration-300'
-        onClick={() => handleOnClick(id)}
-        >
+             onClick={() => handleBookItemClick(id)}>
             <div className='w-full flex flex-col items-center'>
-                <BookCover title={title} imgUrl={imgUrl} />
+                <BookImage title={title} imgUrl={imgUrl}/>
             </div>
             <div className='w-full flex flex-col items-left mt-5 ml-4 gap-3'>
                 <div className="flex flex-col ">
-                    <p >{title}</p>
+                    <p>{title}</p>
                     <p className='text-sm text-slate-500'>{author}</p>
                     <p className='text-sm text-slate-500'>{format} | {language}</p>
                 </div>
@@ -48,4 +42,4 @@ const BookCard : FC<BookCardProps>=({ id, title, author, format, language, price
     );
 }
 
-export default BookCard;
+export default BookItem;

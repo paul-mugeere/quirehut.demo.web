@@ -1,1 +1,1 @@
-export {default as QuireLink} from "./link"
+export {default as QuirehutLink} from "./QuirehutLink"

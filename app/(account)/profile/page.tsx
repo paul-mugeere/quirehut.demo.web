@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth/auth-config"
+import { auth } from "@/lib/auth/authConfig"
 
 export default async function Profile(){
     const session = await auth();

@@ -1,2 +1,2 @@
-export {default as Header} from "./page-header"
-export {default as NavigationLinks} from "./navigation-links"
+export {default as Header} from "./Header"
+export {default as NavigationLinks} from "./NavigationLinks"

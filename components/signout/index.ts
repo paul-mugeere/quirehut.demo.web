@@ -1,1 +1,1 @@
-export { default as SignoutButton} from './signout-button';
+export { default as SignoutButton} from './SignoutButton';

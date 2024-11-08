@@ -1,1 +1,1 @@
-export {default as ProvidersList} from "./providers-list"
+export {default as ProvidersList} from "./ProvidersList"

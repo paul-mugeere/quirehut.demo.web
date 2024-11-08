@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth/auth-config"
+import { auth } from "@/lib/auth/authConfig"
 
 export default async function Home() {
   const session = await auth(); // pass this as props from rootLayout
