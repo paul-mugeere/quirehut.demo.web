@@ -1,8 +1,11 @@
-#addin "nuget:?package=quirehut.demo.cake.docker&version=1.0.10&loaddependencies=true"
+#addin "nuget:?package=quirehut.demo.cake.aliases&version=1.0.4&loaddependencies=true"
 #addin nuget:?package=Newtonsoft.Json
 #tool "dotnet:?package=GitVersion.Tool&version=5.12.0"
 
-using quirehut.demo.cake.docker
+using quirehut.demo.cake.aliases;
+using quirehut.demo.cake.aliases.Docker;
+using quirehut.demo.cake.aliases.Aws;
+using quirehut.demo.cake.aliases.Extensions;
 
 var target = Argument("target", "Default");
 
@@ -12,20 +15,34 @@ Setup<BuildContext>(setupContext =>
     buildContext.Settings.Add(
         new DockerBuildSettings
         {
-            DockerImageSettings = new DockerImageSettings(EnvironmentVariable("CI_REGISTRY_IMAGE"), "."),
-            DockerLoginSettings = new DockerLoginSettings(
-                EnvironmentVariable("CI_REGISTRY_USER"), 
-                EnvironmentVariable("CI_JOB_TOKEN"), 
-                EnvironmentVariable("CI_REGISTRY"))
+            DockerImageSettings = new DockerImageSettings("./src"),
         });
+        buildContext.Settings.Add(new CloudFormationArgs("demo-web","./deploy/fargate-app-spec.yaml", new Dictionary<string,string>{
+           { "ContainerImage", buildContext.GetDockerImageTag()}
+        }));
     return buildContext;
 });
 
+Task("Aws-ValidateCfnTemplates")
+    .WithCriteria(() => !BuildSystem.IsLocalBuild, "Skip on local build")
+    .Does<BuildContext>(async (cakeContext, buildContext) =>
+    {
+        await AwsValidateCloudFormationTemplateAsync(buildContext);
+    });
+Task("Aws-AnalyzeCfnTemplates")
+    .WithCriteria(() => !BuildSystem.IsLocalBuild, "Skip on local build")
+    .IsDependentOn("Aws-ValidateCfnTemplates")
+    .Does<BuildContext>(context =>
+    {
+        AnalyseCloudFormationTemplates("./deploy","--quiet");
+    });
+
 Task("Docker-Login")
     .WithCriteria(() => !BuildSystem.IsLocalBuild, "Skip on local build")
+    .IsDependentOn("Aws-AnalyzeCfnTemplates")
     .Does<BuildContext>((context) =>
     {
-        DockerLogin(context);
+        DockerLogin();
     });
 
 Task("Docker-Build")
@@ -44,9 +61,17 @@ Task("Docker-Push")
         DockerPush(context);
     });
 
+Task("Aws-CreateChangeSet")
+    .WithCriteria(() => !BuildSystem.IsLocalBuild, "Skip on local build")
+    .IsDependentOn("Docker-Push")
+    .Does<BuildContext>(async context =>
+    {
+        await AwsCreateChangeSetAsync(context);
+    });
+
 
 Task("Default")
-    .IsDependentOn("Docker-Push");
+    .IsDependentOn("Aws-CreateChangeSet");
 
 
 RunTarget(target);

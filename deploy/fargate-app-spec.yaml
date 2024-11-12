@@ -1,0 +1,126 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Quirehut Demo web app'
+
+# to be injected by CI/CD using env variables
+Parameters:
+  ContainerImage:
+    Type: String
+    Default: 'nginxdemos/hello'
+  Version:
+    Type: String
+    Default: '1.0.0'
+  ContainerName:
+    Type: String
+    Default: quirehut-demo-web
+  ContainerPort:
+    Type: Number
+    Default: 80
+  AppHostPort:
+    Type: Number
+    Default: 80
+  Cluster: 
+    Type: String
+    Default: ''
+
+Resources:
+  QuirehutDemoWebTaskDef:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      NetworkMode: awsvpc
+      Cpu: .5 vCPU
+      Memory: 1GB 
+      RunTimePlatform:
+        CpuArchitecture: X86_64
+        OperatingSystemFamily : LINUX
+      ContainerDefinitions:
+        - Name: !Ref ContainerName
+          Image: !Ref ContainerImage
+          Memory: 512
+          Cpu: 256
+          PortMappings:
+            - ContainerPort: !Ref ContainerPort
+              HostPort: !Ref AppHostPort
+              Protocol: tcp
+          Essential: true
+      ExecutionRoleArn: !Sub 'arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole'
+
+  QuirehutDemoWebService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !ImportValue DemoCluster-DEV
+      TaskDefinition: !Ref QuirehutDemoWebTaskDef
+      DesiredCount: 2
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: !Ref ContainerName
+          ContainerPort: !Ref ContainerPort
+          LoadBalancerName: !Ref AWS::NoValue
+          TargetGroupArn: !Ref QuirehutDemoWebTg
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: 
+            !Split [",", !ImportValue QuirehutDemoPublicSubnets]
+          SecurityGroups:
+            - !Ref QuirehutDemoWebSg
+    DependsOn: QuirehutDemoWebListener
+
+  QuirehutDemoWebSg:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: 'Allow http traffic from demo-web-alb'
+      GroupName: QuirehutDemoWebSg
+      SecurityGroupIngress:
+        - SourceSecurityGroupId: !Ref QuirehutDemoWebAlbSg
+          Description: 'Allow all http traffic from alb'
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+      VpcId: !ImportValue QuirehutDemoVpc
+  
+  QuirehutDemoWebAlbSg:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: 'Allow http traffic from internet'
+      GroupName: QuirehutDemoWebAlbSg
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          Description: 'Allow all http traffic internet'
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+      VpcId: !ImportValue QuirehutDemoVpc
+
+  QuirehutDemoWebAlb:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: application
+      Name: QuirehutDemoWebAlb
+      SecurityGroups:
+        - !Ref QuirehutDemoWebAlbSg
+      Subnets: 
+        !Split [",", !ImportValue QuirehutDemoPublicSubnets]
+
+  QuirehutDemoWebTg:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: QuirehutDemoWebTg
+      HealthCheckPath: /
+      Port: !Ref AppHostPort
+      Protocol: HTTP
+      HealthCheckProtocol: HTTP
+      HealthCheckIntervalSeconds: 30
+      HealthyThresholdCount: 3
+      UnhealthyThresholdCount: 3
+      VpcId: !ImportValue QuirehutDemoVpc
+      TargetType: ip
+
+  QuirehutDemoWebListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref QuirehutDemoWebTg
+      LoadBalancerArn: !Ref QuirehutDemoWebAlb
+      Port: 80
+      Protocol: HTTP
