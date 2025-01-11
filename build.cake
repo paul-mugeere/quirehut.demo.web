@@ -66,7 +66,7 @@ Task("Aws-CreateChangeSet")
     .IsDependentOn("Docker-Push")
     .Does<BuildContext>(async context =>
     {
-        await AwsCreateChangeSetAsync(context);
+        // await AwsCreateChangeSetAsync(context);
     });
 
 

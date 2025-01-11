@@ -1,5 +1,5 @@
-import {BookList} from '@/components/books'
+import {BookList} from '@/features/books/components'
 
-export default function Books() {
+export default async function Books() {
     return <BookList/>
 }

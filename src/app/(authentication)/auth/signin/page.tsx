@@ -1,4 +1,4 @@
-import { ProvidersList } from "@/components/signin"
+import { ProvidersList } from "@/features/authentication/components/providerList"
 import { Suspense } from "react"
 
 const SignInPage = () => {

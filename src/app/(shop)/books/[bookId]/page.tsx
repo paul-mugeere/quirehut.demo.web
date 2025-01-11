@@ -1,17 +1,20 @@
-import BookDetails from '@/components/books';
 import React from "react";
 
-export default function Page({params}: { params: { slug: string } }) {
+export default async function Page(props: {
+    params: Promise<{ bookId: string, editionId: string }>
+  }){
+    const params = await props.params
     return (
         <div className="w-full m-auto">
-            <BookDetails
+            {/* <BookDetails
                 author={"test-author"}
                 id={params.slug}
                 title={"test-title"}
                 imgUrl={""}
                 format={"Audiobook"}
                 price={400}
-                language={"en-US"}/>
+                language={"en-US"}
+                /> */}
         </div>
 
     )

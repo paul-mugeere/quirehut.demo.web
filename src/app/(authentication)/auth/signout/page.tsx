@@ -1,6 +1,6 @@
 'use client'
 
-import { SignoutButton } from "@/components/signout";
+import { SignoutButton } from "@/features/authentication/components/signoutButton";
 
 export default function Signout() {
     return (
