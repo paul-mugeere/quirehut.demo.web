@@ -84,8 +84,6 @@ build:
       aud: https://gitlab.com
   before_script:
     - *aws-sts-assume-role
-    - echo "${ECS_OIDC}" > /tmp/web_identity_token
-    - echo -e "[profile oidc]\nrole_arn=${ROLE_ARN}\nweb_identity_token_file=/tmp/web_identity_token" > ~/.aws/config
   script:
     - dotnet nuget add source "https://gitlab.com/api/v4/projects/64329060/packages/nuget/index.json" --name GitLab --username "gitlab-ci-token" --password "$CI_JOB_TOKEN" --store-password-in-clear-text
     - chmod +x ./build.sh
