@@ -1,8 +1,7 @@
 'use client'
 
-import {AuthLink} from "@/features/authentication/components/authLink";
 import { SearchInput } from "@/features/shared/components/searchInput";
-import {NavigationLinks} from "@/features/shared/components/header";
+import {NavigationLinks,AuthLink} from "@/features/shared/components/links";
 
 const Header = () => {
     return (

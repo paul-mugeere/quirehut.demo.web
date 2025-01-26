@@ -6,6 +6,7 @@ import BookImage from "./BookImage";
 import Authors from "./Authors";
 import {BookFormat} from "../types/Book.types";
 import {BookAuthor} from "../types/Book.types";
+import { getFormat } from "@/features/books/utils/BookFormat";
 
 export interface BookItemProps {
     bookId: string;
@@ -44,7 +45,7 @@ const BookItem: FC<BookItemProps> = (book:BookItemProps) => {
                 <div className="flex flex-col ">
                     <p>{book.title}</p>
                     <p className='text-sm text-slate-500'><Authors authors={book.authors}/></p>
-                    <p className='text-sm text-slate-500'>{book.format} | {book.language}</p>
+                    <p className='text-sm text-slate-500'>{getFormat(book.format)} | {book.language}</p>
                 </div>
                 <div className="price focus-within:shadow-lg">
                     <p className='text-xl'>{book.price},-</p>

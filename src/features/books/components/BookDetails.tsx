@@ -18,22 +18,27 @@ interface BookItemDetailsProps {
     description: string
 }
 
-const BookDetails = ({title="",authors=[],publicationDate=0,language = "", description, format = '', coverImageUrl }: Partial<BookItemDetailsProps>) => {
+const BookDetails = ({ title = "", authors = [], publicationDate = 0, language = "", description, format = '', coverImageUrl }: Partial<BookItemDetailsProps>) => {
     return (
-        <div className="grid grid-cols-3 gap-10">
-            <div className="book-details col-span-2">
-                <div className="w-full grid grid-cols-3 gap-10">
-                    <div className="w-full flex flex-col items-center col-span-1">
-                        <BookImage title={title} coverImageUrl={coverImageUrl} context={ProductContext.ProductDetails}></BookImage>
-                    </div>
-                    <div className="w-full items-start col-span-2">
-                        <BookDetailsHeader title={title} subTitle={authors.length? authors[0].fullname:""} />
-                        <BookDetailsPublication year={publicationDate} language={language} format={format}/>
-                        <BookDetailsDescription description={description} />
+        <div className="grid grid-row-2">
+            <div className="grid grid-cols-3 gap-10">
+                <div className="book-details col-span-2">
+                    <div className="w-full grid grid-cols-3 gap-10">
+                        <div className="w-full flex flex-col items-center col-span-1">
+                            <BookImage title={title} coverImageUrl={coverImageUrl} context={ProductContext.ProductDetails}></BookImage>
+                        </div>
+                        <div className="w-full items-start col-span-2">
+                            <BookDetailsHeader title={title} subTitle={authors.length ? authors[0].fullname : ""} />
+                            <BookDetailsPublication year={publicationDate} language={language} format={format} />
+                            <BookDetailsDescription description={description} />
+                        </div>
                     </div>
                 </div>
+                <BookDetailsPurchaseOptions />
             </div>
-            <BookDetailsPurchaseOptions />
+            <div className="grid grid-col-1 pt-10">
+                <h2 className="text-2xl">Recommendations</h2>
+            </div>
         </div>
     )
 };
