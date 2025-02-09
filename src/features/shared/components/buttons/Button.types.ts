@@ -3,4 +3,5 @@ export interface ButtonProps {
     handleOnClick?: ()=>void,
     state?: boolean | undefined,
     label: string
+    className?: string
 }
